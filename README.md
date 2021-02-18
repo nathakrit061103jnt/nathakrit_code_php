@@ -117,7 +117,7 @@
                                         'error' => true,
                                 ]);
 
-                                }
+                        }
 
                         mysqli_close($conn);
 
