@@ -126,3 +126,176 @@
         }
         ?>
 ```
+
+## 3. การอัปภาพ จาก VueJS2 มาให้ PHP เเบบบ Base 64 พร้อม Alert เเบบ SweetAlert2
+
+### 3.1 โค้ด VueJS ในการอัปภาพ
+
+#### 1) ส่วนของ HTML เเละ Javascript
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- vuejs2 cdn -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <!-- sweetalert2 cdn -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <!-- axios cdn -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <title>VueJS Upload</title>
+</head>
+
+<body>
+    <div class=" " id="app">
+        <input type="file" @change="convertImagesBase64">
+        <br>
+        <img v-if="img !== null" :src="img" class="img-fluid" width="250"> <br>
+        <button type="btn" @click="uploadImage">Upload</button>
+        </form>
+    </div>
+</body>
+
+<script>
+var app = new Vue({
+    el: '#app',
+    data: {
+        img: null,
+        img_type: null,
+    },
+    methods: {
+        uploadImage() {
+            const payload = {
+                action: "upload_image",
+                img: this.img,
+                img_type: this.img_type
+            }
+            axios.post('./test_upload.php', payload).then(res => {
+                console.log('res', res.data)
+            }).catch(error => console.error(error))
+        },
+        convertImagesBase64(e) {
+            let reader = new FileReader();
+            const fileType = this.checkImageTypeUpload(e);
+            this.img_type = fileType;
+
+            if (fileType !== null) {
+                reader.onload = (e) => {
+                    this.img = e.target.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            } else {
+                this.img = null
+                this.img_type = null
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ไฟล์ที่ Upload',
+                    text: 'กรุณา Upload ไฟล์รูปภาพที่เป็นนามสกุลไฟล์ .jpeg , .jpg , .png!',
+                });
+            }
+        },
+        checkImageTypeUpload(e) {
+            let imageType = e.target.files[0].type;
+            switch (imageType) {
+                case 'image/jpg':
+                    return "jpg";
+                    break;
+                case 'image/jpeg':
+                    return "jpeg";
+                    break;
+                case 'image/png':
+                    return "png";
+                    break;
+                default:
+                    return null;
+            }
+        },
+        checkFileTypeUpload(e) {
+            let imageType = e.target.files[0].type;
+            switch (imageType) {
+                case 'image/jpg':
+                    return "jpg";
+                    break;
+                case 'image/jpeg':
+                    return "jpeg";
+                    break;
+                case 'image/png':
+                    return "png";
+                    break;
+                case 'application/pdf':
+                    return "pdf";
+                    break;
+                case 'application/msword':
+                    return "doc";
+                    break;
+                case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                    return "doc";
+                    break;
+                default:
+                    return null;
+            }
+        },
+    },
+})
+</script>
+
+</html>
+
+```
+
+#### 2) ส่วนของ PHP Server ที่ Upload Images
+
+```PHP
+<?php
+
+header("Access-Control-Allow-Origin: *");
+
+header("Content-Type: application/json; charset=UTF-8");
+
+header("Access-Control-Allow-Methods: OPTIONS,GET,POST,PUT,DELETE");
+
+header("Access-Control-Max-Age: 3600");
+
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+
+$requestMethod = $_SERVER["REQUEST_METHOD"];
+
+if ($requestMethod == 'POST') {
+
+    $input = json_decode(file_get_contents("php://input"));
+    $action = $input->action;
+
+    if ($action == "upload_image") {
+
+        // รับค่าจาก Json Object มาเก็บไว้ในตัวแปร
+        $img = $input->img;
+        $img_type = $input->img_type;
+
+        // $img = mysqli_real_escape_string($conn, $input["img"]);
+        // $img_type = mysqli_real_escape_string($conn, $input["img_type"]);
+
+        if ($img_type !== null) {
+            // path ที่ต้องการอัปไปเก็บ
+            $folderPath = "./uploads/";
+
+            $file_parts = explode(";base64,", $img);
+
+            // $file_type_aux = explode($folderPath, $file_parts[0]);
+            // $file_type = $file_type_aux[1];
+            $file_base64 = base64_decode($file_parts[1]);
+
+            //ชื่อไฟล์
+            $img = uniqid() . "." . "$img_type";
+
+            file_put_contents($folderPath . $img, $file_base64);
+        } else {
+            $img = null;
+        }
+    }
+}
+?>
+```
