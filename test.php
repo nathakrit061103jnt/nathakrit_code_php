@@ -8,3 +8,5 @@ if (mysqli_num_rows($result) > 0) {
 } else {
     echo "ไม่พบข้อมูล";
 }
+
+mysqli_set_charset($conn, "utf8");
