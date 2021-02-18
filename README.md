@@ -2,6 +2,7 @@
 
 ## 1. การเชื่อมต่อฐานข้อมูล MySQLi Procedural
 
+```PHP
         <?php
         $hostname = "localhost";
         $username = "root";
@@ -19,3 +20,4 @@
         mysqli_set_charset($conn,"utf8");
 
         ?>
+```
