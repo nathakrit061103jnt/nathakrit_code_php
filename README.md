@@ -95,33 +95,33 @@
         //ตรวจสอบว่าเป็น Method  POST หรือไม่
         if ($requestMethod == 'POST') {
 
-        if ($result['action'] == "createEmployees") {
+                if ($result['action'] == "createEmployees") {
 
-                $firstName = mysqli_real_escape_string($conn, $result['first_name']);
-                $lastName = mysqli_real_escape_string($conn, $result['last_name']);
+                        $firstName = mysqli_real_escape_string($conn, $result['first_name']);
+                        $lastName = mysqli_real_escape_string($conn, $result['last_name']);
 
-                //คำสั่ง SQL สำหรับเพิ่มข้อมูลใน Database
-                $sql = "INSERT INTO employees (id,first_name,last_name) VALUES (NULL,'$firstName','$lastName')";
+                        //คำสั่ง SQL สำหรับเพิ่มข้อมูลใน Database
+                        $sql = "INSERT INTO employees (id,first_name,last_name) VALUES (NULL,'$firstName','$lastName')";
 
-                if (mysqli_query($conn, $sql)) {
-                echo json_encode([
-                        'status' => 200,
-                        'message' => 'New record created successfully',
-                        'error' => false,
-                ]);
-                } else {
-                $mes = "Error: " . $sql . "<br>" . mysqli_error($conn);
-                echo json_encode([
-                        'status' => 404,
-                        'message' => $mes,
-                        'error' => true,
-                ]);
+                        if (mysqli_query($conn, $sql)) {
+                                echo json_encode([
+                                        'status' => 200,
+                                        'message' => 'New record created successfully',
+                                        'error' => false,
+                                ]);
+                        } else {
+                                $mes = "Error: " . $sql . "<br>" . mysqli_error($conn);
+                                echo json_encode([
+                                        'status' => 404,
+                                        'message' => $mes,
+                                        'error' => true,
+                                ]);
+
+                                }
+
+                        mysqli_close($conn);
 
                 }
-
-                mysqli_close($conn);
-
-        }
 
         }
         ?>
