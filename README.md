@@ -127,9 +127,59 @@
         ?>
 ```
 
-## 3. การอัปภาพ จาก VueJS2 มาให้ PHP เเบบบ Base 64 พร้อม Alert เเบบ SweetAlert2
+## 3. การอัปโหลดโหลดภาพ เเละบันทึกลงฐานข้อมูล mysql
 
-### 3.1 โค้ด VueJS ในการอัปภาพ
+```PHP
+// ต้องใส่  enctype="multipart/form-data" ถ้าจะทำการอัปโหลดภาพ
+ <form action="" method="post" enctype="multipart/form-data">
+     <div class="row clearfix">
+         <div class="col-sm-4">
+             <div class="form-group">
+                 <div class="form-line">
+                     <input type="file" name="dt_image1" required class="form-control" placeholder="รูปภาพที่ 1">
+                 </div>
+             </div>
+         </div>
+     </div>
+     <div class="row clearfix">
+         <div class="col-sm-12">
+             <button type="submit" name="submitInsertData"
+                 class="btn btn-primary btn-block btn-lg">เพิ่มพอพัก</button>
+         </div>
+     </div>
+ </form>
+
+
+
+<?php
+if (isset($_POST["submitInsertData"])) {
+
+    $dt_image1 = uniqid() . $_FILES["dt_image1"]["name"];
+
+    $sql = "INSERT INTO my_table (`dt_id`,`dt_image1`)
+            VALUES (NULL, '" . $dt_image1 . "');";
+
+    if (mysqli_query($conn, $sql)) {
+        echo "<script>";
+        echo "alert('บันทึกข้อมูลสำเร็จ');";
+        echo "</script>";
+        // path ที่จะใช้เก็บภาพที่อัปโหลดไป
+        $path = "../../images/drm/";
+        move_uploaded_file($_FILES["dt_image1"]["tmp_name"], "$path/$dt_image1");
+
+    } else {
+        echo "<script>";
+        echo "alert('ไม่สามารถลบข้อมูลได้');";
+        echo "</script>";
+    }
+
+}
+
+```
+
+## 4. การอัปภาพ จาก VueJS2 มาให้ PHP เเบบบ Base 64 พร้อม Alert เเบบ SweetAlert2
+
+### 4.1 โค้ด VueJS ในการอัปภาพ
 
 #### 1) ส่วนของ HTML เเละ Javascript
 
