@@ -154,7 +154,8 @@
 <?php
 if (isset($_POST["submitInsertData"])) {
 
-    $dt_image1 = uniqid() . $_FILES["dt_image1"]["name"];
+   $dt_image1_time = md5(date("Y-m-d h:i:s"));
+   $dt_image1 = uniqid() . $dt_image1_time . $_FILES["bk_slip"]["name"]; 
 
     $sql = "INSERT INTO my_table (`dt_id`,`dt_image1`)
             VALUES (NULL, '" . $dt_image1 . "');";
